@@ -30,6 +30,6 @@ The owner is Slater, a non-developer. Explain things in plain British English, n
 ## Brand rules (Slater's)
 - All dark: page `#0B0B0C`, cards `#131315`/`#18181B`, text `#F6F3EE`, orange `#EE7A34`, good `#5CC37E`.
 - **No translucent orange.** It shows as pink on his screen. Use solid colours only.
-- Syne ExtraBold for headings and big numbers, DM Sans for body text.
+- Syne ExtraBold for headings, DM Sans for body text. Big numbers and stats use Archivo Black-style: `var(--nums)` (Archivo, weight 900, `font-stretch: 75%`), chosen by Slater 25 Nov 2026 (v6.0).
 - Voice: direct, British, talks to "the lads" (UK tradespeople aged 20–30). UK supermarket foods only (Tesco, Sainsbury's, Aldi, Lidl).
 - Food values to one decimal place, as on the packet. Don't round per item.

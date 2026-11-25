@@ -41,7 +41,7 @@
 @media (max-width: 520px) { .fields.q4, .nutrows { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .equation { display: flex; align-items: center; justify-content: space-between; gap: 4px; background: var(--card-2); border: 1px solid var(--line); border-radius: 13px; padding: 10px 12px; }
 .equation div { display: flex; flex-direction: column; align-items: center; min-width: 0; }
-.equation b { font-size: 17px; }
+.equation b { font-size: 21px; font-family: var(--nums); font-weight: 900; font-stretch: 75%; line-height: 1.1; }
 .equation span { font-size: 11px; color: var(--muted); }
 .equation i { font-style: normal; color: var(--faint); font-weight: 700; }
 .equation .over b { color: var(--warn); }
@@ -270,10 +270,12 @@ span.todomain { cursor: default; }
 .mcadj:first-of-type { border-top: 0; }
 .mcadj b { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
 @media (max-width: 380px) { .mcopts.two { grid-template-columns: 1fr; } }
-/* v5.9: text that fits. Big tile numbers shrink with the tile (Syne is wide). */
+/* v5.9/6.0: text that fits. Big numbers use Archivo, condensed (Slater's pick, option C). */
 .tile { container-type: inline-size; }
-.tile .big { font-size: clamp(16px, 22cqi, 31px); white-space: nowrap; }
-.tile .big[style*="font-size"] { font-size: clamp(13px, 12cqi, 22px) !important; }
+.tile .big { font-size: clamp(18px, 28cqi, 34px); white-space: nowrap; }
+.tile .big[style*="font-size"] { font-size: clamp(14px, 16cqi, 24px) !important; }
+.tile .big, .ring .mid b, .timerbar .t, .keypad button, .chv b, .wnum, .fastclock, .tnum, .todocount, .mccal, .mcdot b, .num[style*="--nums"] { font-family: var(--nums); font-weight: 900; font-stretch: 75%; }
+.tile .big small, .chv small { font-family: var(--body); font-weight: 500; font-stretch: 100%; }
 .tile .big small { font-size: clamp(11px, 11cqi, 14px); }
 .tile .lbl { overflow-wrap: anywhere; }
 @media (max-width: 419px) { .fdtiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
