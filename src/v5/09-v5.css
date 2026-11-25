@@ -2,7 +2,7 @@
 <style>
 /* ---------- build 5: food diary, scanner, reports, plans ---------- */
 .sheet > * { flex-shrink: 0; }
-.pgtitle, .titlein { font-family: Syne, sans-serif; font-weight: 800; }
+.pgtitle, .titlein { font-family: var(--display); font-stretch: 75%; font-weight: 800; }
 .fstabs { display: flex; width: 100%; overflow-x: auto; scrollbar-width: none; }
 .fstabs::-webkit-scrollbar { display: none; }
 .fstabs button { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; }
@@ -52,7 +52,7 @@
 .nutbars { display: flex; flex-direction: column; gap: 9px; }
 .nutbar { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
 .bar.warnb > i { background: var(--warn); }
-.fastclock { font-family: Syne, sans-serif; font-size: 26px; }
+.fastclock { font-family: var(--display); font-stretch: 75%; font-size: 26px; }
 .kbars { display: flex; align-items: flex-end; gap: 4px; height: 170px; padding-bottom: 18px; position: relative; }
 .kbars.dense { gap: 1px; }
 .kb { flex: 1; height: 100%; position: relative; min-width: 0; }
@@ -64,7 +64,7 @@
 .lg-line { display: inline-block; width: 14px; height: 2px; background: var(--text); opacity: .55; margin: 0 4px 3px 8px; }
 .splitbar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--card-3); }
 .splitbar i { display: block; height: 100%; }
-.titlein { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(24px, 5vw, 34px); background: transparent; border-color: transparent; padding: 6px 2px; }
+.titlein { font-family: var(--display); font-stretch: 75%; font-weight: 800; font-size: clamp(24px, 5vw, 34px); background: transparent; border-color: transparent; padding: 6px 2px; }
 .titlein:hover, .titlein:focus { border-color: var(--line-2); background: var(--card); }
 .struck { text-decoration: line-through; color: var(--muted); }
 .tile .big small { font-size: 13px; color: var(--muted); margin-left: 2px; }
@@ -87,7 +87,7 @@
 .tclock .ring { margin: 0 auto; }
 .tph { font-weight: 800; text-transform: uppercase; letter-spacing: .04em; font-size: 13px; color: var(--muted); }
 .tph.work { color: var(--orange); } .tph.rest { color: var(--good); } .tph.prep { color: var(--warn); }
-.tnum { font-family: Syne, sans-serif; font-size: 58px; line-height: 1; }
+.tnum { font-family: var(--display); font-stretch: 75%; font-size: 58px; line-height: 1; }
 .vidin { max-width: 46%; }
 @media (max-width: 520px) { .vidin { max-width: 42%; } }
 .qaopt { position: relative; }
@@ -131,9 +131,9 @@
 @media (hover: none) { .grip { opacity: .7; } }
 .grip:hover { background: var(--card-2); color: var(--text); }
 .bt { flex: 1; min-width: 0; outline: none; white-space: pre-wrap; overflow-wrap: anywhere; padding: 5px 2px; line-height: 1.6; font-size: 16px; min-height: 1.6em; }
-.b-h1 .bt { font-family: Syne, sans-serif; font-weight: 800; font-size: 28px; line-height: 1.2; padding-top: 14px; }
-.b-h2 .bt { font-family: Syne, sans-serif; font-weight: 800; font-size: 22px; line-height: 1.25; padding-top: 12px; }
-.b-h3 .bt { font-family: Syne, sans-serif; font-weight: 700; font-size: 18px; padding-top: 8px; }
+.b-h1 .bt { font-family: var(--display); font-stretch: 75%; font-weight: 800; font-size: 28px; line-height: 1.2; padding-top: 14px; }
+.b-h2 .bt { font-family: var(--display); font-stretch: 75%; font-weight: 800; font-size: 22px; line-height: 1.25; padding-top: 12px; }
+.b-h3 .bt { font-family: var(--display); font-stretch: 75%; font-weight: 700; font-size: 18px; padding-top: 8px; }
 .b-p .bt:empty::before { content: ''; }
 .b-p:only-child .bt:empty::before, .b-p .bt:focus:empty::before { content: attr(data-ph); }
 .b-p .bt:focus:empty::before { content: "Type '/' for blocks"; }
@@ -214,7 +214,7 @@
 .iconpick button { height: 52px; border-radius: 13px; background: var(--card-2); border: 1px solid var(--line-2); color: var(--orange); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .iconpick button.on { background: var(--ember); border-color: var(--orange); }
 .iconpick svg { width: 22px; height: 22px; }
-.todocount { font-family: Syne, sans-serif; font-size: 28px; color: var(--orange); }
+.todocount { font-family: var(--display); font-stretch: 75%; font-size: 28px; color: var(--orange); }
 .todocount span { font-size: 16px; color: var(--muted); }
 .todolist { display: flex; flex-direction: column; }
 .todo { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); min-height: 52px; }
@@ -239,14 +239,14 @@ span.todomain { cursor: default; }
 .mcbar { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 4px; }
 .mcbar::-webkit-scrollbar { display: none; }
 .mcdot { flex: 1 0 34px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.mcdot b { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--line-2); background: var(--card); display: flex; align-items: center; justify-content: center; font-family: Syne, sans-serif; font-size: 11px; color: var(--muted); }
+.mcdot b { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--line-2); background: var(--card); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-stretch: 75%; font-size: 11px; color: var(--muted); }
 .mcdot span { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .mcdot.on b { border-color: var(--orange); color: var(--orange); background: var(--ember); }
 .mcdot.on span { color: var(--orange); }
 .mcdot.done b { background: var(--orange); border-color: var(--orange); color: var(--on-orange); }
 .mcdot.done span { color: var(--text); }
 .mccard { gap: 16px; }
-.mchd h2 { font-family: Syne, sans-serif; font-weight: 800; text-transform: uppercase; font-size: 24px; margin: 0 0 6px; }
+.mchd h2 { font-family: var(--display); font-stretch: 75%; font-weight: 800; text-transform: uppercase; font-size: 24px; margin: 0 0 6px; }
 .mchd p { color: var(--muted); font-size: 14px; margin: 0; }
 .mcopts { display: grid; gap: 8px; }
 .mcopts.two { grid-template-columns: 1fr 1fr; }
@@ -262,7 +262,7 @@ span.todomain { cursor: default; }
 .mcerr { color: var(--orange-hi); font-size: 13px; }
 .mcnav .btn.grow { font-size: 16px; }
 .seg.mini button { padding: 5px 12px; font-size: 12px; min-height: 30px; }
-.mccal { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(48px, 13vw, 64px); color: var(--orange); line-height: 1; }
+.mccal { font-family: var(--display); font-stretch: 75%; font-weight: 800; font-size: clamp(48px, 13vw, 64px); color: var(--orange); line-height: 1; }
 .mcprio { border-left: 4px solid var(--orange); }
 .mcprio p { margin: 0; line-height: 1.7; font-size: 14px; }
 .mctotal { border-top: 1px solid var(--orange); }
@@ -282,4 +282,7 @@ span.todomain { cursor: default; }
 .li .grow { min-width: 0; }
 .li .tiny, .li .small { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .scanbox.live .scanframe i { animation: none; } .tgl { transition: none; } }
+/* v6.1: Archivo for everything. Body text at normal width, everything bold/display condensed. */
+body { font-stretch: 100%; }
+h1, h2, h3, .topbar .ttl, .pgtitle, .titlein, .mchd h2 { font-weight: 900; }
 </style>
