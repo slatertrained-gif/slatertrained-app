@@ -232,5 +232,10 @@ span.todomain { cursor: default; }
 .todogo svg { width: 16px; height: 16px; }
 .repseg { display: flex; flex-wrap: wrap; }
 .dayopt span { padding: 7px 10px; border: 1px solid var(--line-2); }
+.like, .todo .tick, button.tick, .linkbtn, button.check[data-act=modDone], .calplus, .grip { position: relative; }
+.like::after, .todo .tick::after, button.tick::after, button.check[data-act=modDone]::after, .calplus::after { content: ''; position: absolute; inset: -10px; }
+.linkbtn::after { content: ''; position: absolute; inset: -12px -4px; }
+.like { min-height: 36px; min-width: 36px; justify-content: center; }
+@media (max-width: 699px) { .sheet .grab { width: 48px; height: 5px; margin: -6px auto 2px; box-shadow: 0 0 0 14px transparent; } .sheet { touch-action: pan-y; overscroll-behavior: contain; } }
 @media (prefers-reduced-motion: reduce) { .scanbox.live .scanframe i { animation: none; } .tgl { transition: none; } }
 </style>

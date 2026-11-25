@@ -12,7 +12,7 @@ import os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'src')
 VERSION = sys.argv[1] if len(sys.argv) > 1 else 'dev'
-JS = ['09a-nutrition.js', '09b-coach.js', '09c-workspace.js', '09d-todo.js', '09f-exlib.js', '09e-packs.js', '09z-register.js']
+JS = ['09a-nutrition.js', '09b-coach.js', '09c-workspace.js', '09d-todo.js', '09f-exlib.js', '09e-packs.js', '09g-gestures.js', '09z-register.js']
 
 s = open(os.path.join(SRC, 'base-build4.html')).read()
 css = open(os.path.join(SRC, 'v5', '09-v5.css')).read()
