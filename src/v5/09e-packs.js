@@ -170,3 +170,41 @@ document.addEventListener('change', async e => { const t = e.target; if (!t.data
 document.addEventListener('input', e => { const t = e.target, ds = t.dataset; if (!ds) return;
   if (ds.packrep !== undefined && t.checked) { const a = $('#pkdue'), b = $('#pkdays'); if (a) a.hidden = t.value !== 'once'; if (b) b.hidden = t.value !== 'days'; return; }
   if (ds.pk && ds.id) { const pk = S.packs.find(x => x.id === ds.id); if (!pk) return; pk[ds.pk] = t.type === 'checkbox' ? t.checked : t.value; t.tagName === 'SELECT' || t.type === 'checkbox' ? save() : lazySave(); } });
+
+/* ---------- per-client habits sheet (v5.6) ----------
+   One place to manage a client's habits: pick from the master library, or add a
+   custom habit just for them (not saved to the library unless you tick the box). */
+let HLP = { cat: '' };
+SHEETS.clientHabits = el => { const c = DB.client(el.dataset.c), f = first(c.name);
+  openSheet(`${sheetHead(c.name, 'Habits')}
+    <div class="list">${c.habits.map(h => `<div class="li"><span class="grow" style="min-width:0"><b class="trunc" style="display:block">${esc(h.label)}</b><span class="tiny">${esc(habitDaysText(h))}${habitPool().some(x => x.name.toLowerCase() === h.label.toLowerCase()) ? ' · from library' : ' · just for ' + esc(f)}</span></span><button class="iconbtn sm" data-act="sheetHabitDays" data-c="${c.id}" data-h="${h.id}" data-back="1" aria-label="Edit ${esc(h.label)}">${IC.edit}</button><button class="iconbtn sm" data-act="chRemove" data-c="${c.id}" data-h="${h.id}" aria-label="Remove ${esc(h.label)}">${IC.x}</button></div>`).join('') || `<span class="tiny">${esc(f)} has no habits yet.</span>`}</div>
+    <button class="btn block" data-act="habitLibPick" data-c="${c.id}">${IC.book} Add from your master library</button>
+    <form class="card stripe stack-sm" data-form="chCustom" data-c="${c.id}"><h3>Custom habit just for ${esc(f)}</h3>
+      <input class="in" name="label" required maxlength="60" placeholder="e.g. No energy drinks before 12">
+      <div class="eyebrow">Which days</div>${dayQuick('hd')}${dayChips(ALLD)}
+      <label class="row small" style="gap:8px;cursor:pointer"><input type="checkbox" name="lib"> Also save it to my master library</label>
+      <button class="btn block" type="submit">Add for ${esc(f)}</button></form>`); };
+SHEETS.habitLibPick = el => { const c = DB.client(el.dataset.c), pool = habitPool(), cats = [...new Set(pool.map(h => h.cat))]; if (!cats.includes(HLP.cat)) HLP.cat = cats[0];
+  openSheet(`${sheetHead(c.name, 'Master habit library')}
+    <div class="eyebrow">On which days</div><div class="row" style="gap:6px">${[1, 2, 3, 4, 5, 6, 0].map(d => `<button class="tab ${HAS_DAYS.includes(d) ? 'on' : ''}" data-act="hlpDay" data-d="${d}" data-c="${c.id}">${DAYN[d]}</button>`).join('')}</div><span class="tiny">${esc(habitDaysText({ days: HAS_DAYS }))}. Tap habits to add or remove them.</span>
+    <div class="tabs">${cats.map(x => `<button class="tab ${HLP.cat === x ? 'on' : ''}" data-act="hlpCat" data-v="${esc(x)}" data-c="${c.id}">${esc(x)}</button>`).join('')}</div>
+    <div class="stack-sm">${pool.filter(h => h.cat === HLP.cat).map(h => { const on = c.habits.some(x => x.label.toLowerCase() === h.name.toLowerCase()); return `<button class="check ${on ? 'on' : ''}" data-act="hlpToggle" data-c="${c.id}" data-n="${esc(h.name)}"><span class="box">${on ? IC.tick : ''}</span><span class="grow"><b style="display:block">${esc(h.name)}</b><span class="tiny">${esc(h.desc || '')}</span></span></button>`; }).join('')}</div>
+    <button class="btn ghost block" data-act="clientHabits" data-c="${c.id}">Done</button>`); };
+Object.assign(ACTS, {
+  clientHabits: el => SHEETS.clientHabits(el), habitLibPick: el => SHEETS.habitLibPick(el),
+  hlpCat: el => { HLP.cat = el.dataset.v; SHEETS.habitLibPick(el); },
+  hlpDay: el => { const d = +el.dataset.d; HAS_DAYS = HAS_DAYS.includes(d) ? HAS_DAYS.filter(x => x !== d) : [...HAS_DAYS, d].sort(); if (!HAS_DAYS.length) HAS_DAYS = [d]; SHEETS.habitLibPick(el); },
+  hlpToggle: el => { const c = DB.client(el.dataset.c), n = el.dataset.n, i = c.habits.findIndex(h => h.label.toLowerCase() === n.toLowerCase()); if (i >= 0) c.habits.splice(i, 1); else c.habits.push({ id: uid(), label: n, days: HAS_DAYS.length === 7 ? undefined : HAS_DAYS.slice() }); save(); stay({}); SHEETS.habitLibPick(el); },
+  chRemove: el => { const c = DB.client(el.dataset.c); c.habits = c.habits.filter(h => h.id !== el.dataset.h); save(); stay({}); SHEETS.clientHabits(el); },
+  sheetHabitDays: el => SHEETS.habitDays(el)
+});
+FORMS.chCustom = (f, d) => { const c = DB.client(f.dataset.c), days = readDays(d), label = d.label.trim(); if (!days.length) return toast('Pick at least one day.');
+  if (c.habits.some(h => h.label.toLowerCase() === label.toLowerCase())) return toast(`${first(c.name)} already has that habit.`);
+  c.habits.push({ id: uid(), label, days: days.length === 7 ? undefined : days });
+  if (d.lib && !habitPool().some(h => h.name.toLowerCase() === label.toLowerCase())) S.habitLib.push({ id: uid(), cat: 'My habits', name: label, desc: '', by: 'coach' });
+  save(); stay({}); toast(d.lib ? `Added for ${first(c.name)} and saved to your library` : `Added for ${first(c.name)} only`); SHEETS.clientHabits({ dataset: { c: c.id } }); };
+// After editing a habit's days from the habits sheet, go back to it.
+{ const _hd = FORMS.habitDays; FORMS.habitDays = (f, d) => { _hd(f, d); if (f.dataset.back) SHEETS.clientHabits({ dataset: { c: f.dataset.c } }); }; }
+{ const _hds = SHEETS.habitDays; SHEETS.habitDays = el => { _hds(el); if (el.dataset.back) { const fm = document.querySelector('form[data-form=habitDays]'); if (fm) fm.dataset.back = '1'; } }; }
+// Habits button on the client's to-do card (Overview tab).
+{ const _ct2 = coachTodoCard; coachTodoCard = function (c) { return _ct2(c).replace(`<button class="btn ghost sm" data-act="packPick"`, `<button class="btn ghost sm" data-act="clientHabits" data-c="${c.id}">${IC.tick} Habits (${c.habits.length})</button><button class="btn ghost sm" data-act="packPick"`); }; }
