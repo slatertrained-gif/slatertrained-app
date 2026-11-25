@@ -1,0 +1,35 @@
+# The Tradie Transformation app (SlaterTrained)
+
+Single-file web app (PWA) for SlaterTrained online coaching: Trainerize + MyFitnessPal + Notion in one.
+Live at https://slatertrained-gif.github.io/slatertrained-app/ (GitHub Pages, `main` branch, root).
+Also published as a Claude artifact: https://claude.ai/artifact/DWCb5DvwegS2eEFoTMzQKm (slug `65415fd0-a13a-433f-bd46-cea024bbfa64`). Republish `dist/index.html` there after each release.
+
+The owner is Slater, a non-developer. Explain things in plain British English, no jargon. Full project brief is in the claude.ai Project docs (`tradie-transformation-brief.md`).
+
+## Files
+- `index.html` — the built app that GitHub Pages serves. **Never edit it by hand. Always rebuild it.**
+- `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png` — install-to-home-screen bits.
+- `src/base-build4.html` — builds 1–4 as one page (pulled from the published artifact on 24 Nov 2026). Treat as the base. Small fixes to old screens can be made in it directly.
+- `src/v5/` — build 5 code, joined after the base: `09a-nutrition.js` (food diary, barcode scanner, Open Food Facts, recipes, meal plans, fasting, nutrition report), `09b-coach.js` (challenges, habit library, auto tags, client table, journey messages, interval timer, demo videos), `09c-workspace.js` (Notion-style pages and databases), `09z-register.js` (navigation and screen wiring), `09-v5.css`.
+- `src/build.py` — builds everything. `src/tests/` — Playwright browser tests.
+
+## How a release works
+1. Edit files in `src/`.
+2. `python3 src/build.py <version>`. Bump the version each release (e.g. 5.3 → 5.4). It shows under the footer, so Slater can check his phone is up to date.
+3. `node --check dist/app.js`, then `python3 src/tests/smoke.py` (every screen at 400px and 1320px: no errors, no sideways overflow, no "undefined"). Run the other tests when touching their area.
+4. Commit `index.html` and the `src/` changes, then push `main`. Pages updates in about a minute. Slater closes and reopens the app to get it.
+5. Republish `dist/index.html` to the Claude artifact (publish_files with the slug above).
+
+## How the code works
+- Plain JavaScript, no framework, one `<script>`. Later code extends earlier code: register screens in `VIEWS.coach` / `VIEWS.client`, button handlers in `ACTS` (`data-act`), sheets in `SHEETS`, forms in `FORMS` (`data-form`), migrations by wrapping `migrate4`.
+- Function declarations are global bindings. To extend an old function, wrap it (`const _f = f; f = function () { ... }`). If the old function is referenced in `VIEWS`, update `VIEWS` too.
+- A duplicate top-level `const`/`let`/`function` name breaks the whole script. `node --check` catches it.
+- Data: localStorage `tt_app_v2` (object `S`), session `tt_session_v2`, images in IndexedDB `tt_images`. Everything goes through the `DB` helper, ready for Supabase. The Supabase schema is in the Project docs (`slatertrained_schema_v5.sql`, run after the Phase 1 schema).
+- The Claude artifact blocks the camera and outside fetches (Open Food Facts). The GitHub Pages copy allows both.
+
+## Brand rules (Slater's)
+- All dark: page `#0B0B0C`, cards `#131315`/`#18181B`, text `#F6F3EE`, orange `#EE7A34`, good `#5CC37E`.
+- **No translucent orange.** It shows as pink on his screen. Use solid colours only.
+- Syne ExtraBold for headings and big numbers, DM Sans for body text.
+- Voice: direct, British, talks to "the lads" (UK tradespeople aged 20–30). UK supermarket foods only (Tesco, Sainsbury's, Aldi, Lidl).
+- Food values to one decimal place, as on the packet. Don't round per item.
