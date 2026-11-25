@@ -25,7 +25,7 @@ function todoItems(c, date = today()) {
   if (plan.day || logged) out.push({ k: 'workout', icon: 'train', title: logged ? `${logged.dayName} logged` : plan.day.name, sub: logged ? 'Workout done' : `Workout · ${plan.day.exercises.length} exercises`, done: !!logged, go: logged ? ['summary', { id: logged.id, _back: 'today' }] : ['session', { dayId: plan.day.id, _back: 'today' }] });
   (c.extras || []).filter(x => !x.done).forEach(x => out.push({ k: 'extra', icon: 'train', title: x.name, sub: 'Extra workout', done: false, go: ['session', { dayId: x.id, _back: 'today' }] }));
   if (checkinDue(c.id)) out.push({ k: 'checkin', icon: 'clip', title: 'Send your Monday check-in', sub: 'About 3 minutes', done: false, go: ['checkin', { _back: 'today' }] });
-  c.habits.forEach(h => out.push({ k: 'habit', icon: 'tick', title: h.label, sub: 'Habit', done: dd.habits.includes(h.id), act: 'habit', h: h.id }));
+  habitsOn(c, date).forEach(h => out.push({ k: 'habit', icon: 'tick', title: h.label, sub: 'Habit', done: dd.habits.includes(h.id), act: 'habit', h: h.id }));
   S.tasks.filter(t => t.clientId === c.id && taskOn(t, date)).forEach(t => out.push({ k: 'task', icon: 'pin', title: t.title, sub: [t.note, t.repeat === 'once' && t.due && t.due < date && !taskDone(t, date) ? 'Overdue' : repeatText(t)].filter(Boolean).join(' · '), late: t.repeat === 'once' && t.due && t.due < date, done: taskDone(t, date), act: 'taskTick', id: t.id, go: t.link ? [t.link, { _back: 'today' }] : null }));
   return out;
 }
@@ -81,4 +81,3 @@ FORMS.task = (f, d) => {
   save(); closeSheet(); toast(ex ? 'Task saved' : 'Added to their to-do list'); stay({});
 };
 document.addEventListener('input', e => { const t = e.target; if (t.dataset && t.dataset.taskrep !== undefined && t.checked) { const dd = $('#taskdays'), du = $('#taskdue'); if (dd) dd.hidden = t.value !== 'days'; if (du) du.hidden = t.value !== 'once'; } });
-{ const _m = migrate4; migrate4 = function () { _m(); migrate5d(); }; }

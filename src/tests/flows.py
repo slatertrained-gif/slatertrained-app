@@ -30,7 +30,7 @@ async def main():
             await pg.fill('form[data-form=barcodeAdd] input[name=name]','Test protein yoghurt'); await pg.fill('form[data-form=barcodeAdd] input[name=brand]','Tesco')
             await pg.fill('form[data-form=barcodeAdd] input[name=g]','200'); await pg.fill('form[data-form=barcodeAdd] input[name=kcal]','60'); await pg.fill('form[data-form=barcodeAdd] input[name=p]','10'); await pg.fill('form[data-form=barcodeAdd] input[name=sug]','4.5'); await pg.fill('form[data-form=barcodeAdd] input[name=salt]','0.1')
             await pg.click('form[data-form=barcodeAdd] button[type=submit]'); await pg.wait_for_timeout(200)
-            await pg.select_option('select[data-fdunit]','g'); await pg.wait_for_timeout(150)
+            await pg.click('button[data-act=fdUnit][data-v=g]'); await pg.wait_for_timeout(150)
             await pg.fill('#fdamt','150'); await pg.wait_for_timeout(100)
             log.append('grams detail: '+(await pg.inner_text('#fdtot')).replace('\n',' ')[:90])
             await pg.click('button[data-act=fdAdd]'); await pg.wait_for_timeout(200)
@@ -79,7 +79,7 @@ async def main():
         await E("go('habits')"); await pg.click('button[data-act=sheetHabitAssign] >> nth=0'); await pg.click('button[data-act=habitAssign] >> nth=1'); await pg.wait_for_timeout(100); log.append('habits on client2: '+str(await E("return S.clients[1].habits.map(h=>h.label)")))
         await E("closeSheet();go('clienttable')"); await pg.click('button[data-act=sheetTagSet]'); await E("closeSheet()")
         # demo video
-        await E("go('exvideos')"); await pg.fill('input[data-exvid] >> nth=0','https://youtu.be/abc'); await pg.wait_for_timeout(500)
+        await E("go('exvideos')"); await pg.wait_for_timeout(200)
         # automations render
         await E("go('automations')"); log.append('journey cards: '+str(await pg.locator('textarea[data-autotext]').count()))
         await b.close()

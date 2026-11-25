@@ -777,7 +777,7 @@ function points(id, since = null) {
   const foodDays = new Set(S.food.filter(f => f.clientId === id && ok(f.date)).map(f => f.date));
   S.daily.filter(d => d.clientId === id && ok(d.date)).forEach(d => {
     if (d.weight || foodDays.has(d.date)) p += POINTS.logDay;
-    if (c && c.habits.length && c.habits.every(h => d.habits.includes(h.id))) p += POINTS.habitsDay;
+    if (c && habitsOn(c, d.date).length && habitsOn(c, d.date).every(h => d.habits.includes(h.id))) p += POINTS.habitsDay;
   });
   return p;
 }
@@ -816,7 +816,7 @@ function compliance(c, days = 7) {
   const since = addDays(today(), -days + 1), p = DB.prog(c.programmeId), planned = p ? Math.max(1, Math.round(p.days.length * days / 7)) : 0;
   const done = S.logs.filter(l => l.clientId === c.id && l.date >= since).length;
   const dl = S.daily.filter(d => d.clientId === c.id && d.date >= since);
-  const habits = c.habits.length ? sum(dl, d => d.habits.length) / (days * c.habits.length) : 0;
+  const hx = habitSlots(c, since, days), habits = hx ? Math.min(1, sum(dl, d => d.habits.length) / hx) : 0;
   const foodDays = new Set(S.food.filter(f => f.clientId === c.id && f.date >= since).map(f => f.date)).size / days;
   const train = planned ? Math.min(1, done / planned) : 0;
   return { train: Math.round(train * 100), habits: Math.round(habits * 100), food: Math.round(foodDays * 100), all: Math.round((train + habits + foodDays) / 3 * 100), done, planned };
@@ -1246,7 +1246,7 @@ function clientNutrition(c) {
         <label class="f">Goal<select class="in sm" name="goal">${opt(GOALS, c.goal, g => [g.id, g.name])}</select></label><label class="f">Sex<select class="in sm" name="sex">${opt([['m', 'Male'], ['f', 'Female']], st.sex || 'm', x => x)}</select></label>
         <label class="f">Age<input class="in sm num" name="age" type="number" value="${st.age || ''}" required></label><label class="f">Height cm<input class="in sm num" name="height" type="number" value="${st.height || ''}" required></label>
         <label class="f">Weight kg<input class="in sm num" name="weight" type="number" step="0.1" value="${DB.dailyOf(c.id).filter(d => d.weight).pop()?.weight || ''}" required></label></div><button class="btn ghost sm" type="submit" style="align-self:flex-start">Apply new targets</button></form>
-      <section class="card"><h3>Habits</h3><div class="list">${c.habits.map(h => `<div class="li"><span class="grow">${esc(h.label)}</span><button class="iconbtn sm" data-act="delHabit" data-id="${c.id}" data-h="${h.id}" aria-label="Remove habit">${IC.x}</button></div>`).join('') || '<div class="empty small">No habits set.</div>'}</div>
+      <section class="card"><h3>Habits</h3><div class="list">${c.habits.map(h => `<div class="li"><span class="grow">${esc(h.label)} <span class="tiny">${esc(habitDaysText(h))}</span></span><button class="iconbtn sm" data-act="sheetHabitDays" data-c="${c.id}" data-h="${h.id}" aria-label="Change days">${IC.cal}</button><button class="iconbtn sm" data-act="delHabit" data-id="${c.id}" data-h="${h.id}" aria-label="Remove habit">${IC.x}</button></div>`).join('') || '<div class="empty small">No habits set.</div>'}</div>
         <form class="row" data-form="addHabit" data-id="${c.id}"><input class="in sm grow" name="label" placeholder="e.g. Pack lunch the night before" style="min-width:180px" required><button class="btn sm" type="submit">Add</button></form></section></div></div>
     <section class="card"><h3>Last 14 days</h3><div class="tablewrap"><table class="t num"><thead><tr><th>Date</th><th>kcal</th><th>Protein</th><th>Steps</th><th>Water</th><th>Sleep</th><th>Habits</th></tr></thead><tbody>
       ${Array.from({ length: 14 }, (_, i) => addDays(today(), -i)).map(dt => { const d = DB.day(c.id, dt) || {}, t = dayTotals(c.id, dt), tg = targetsFor(c, dt); return `<tr><td style="white-space:nowrap">${fmtLong(dt)}</td><td style="color:${!t.n ? 'var(--faint)' : Math.abs(t.kcal - tg.kcal) <= tg.kcal * 0.1 ? 'var(--good)' : 'var(--text)'}">${t.n ? t.kcal : '—'}</td><td style="color:${!t.n ? 'var(--faint)' : t.p >= tg.p * 0.9 ? 'var(--good)' : 'var(--warn)'}">${t.n ? t.p + 'g' : '—'}</td><td>${d.steps ? d.steps.toLocaleString('en-GB') : '—'}</td><td>${d.water ? (d.water / 1000).toFixed(1) + 'L' : '—'}</td><td>${d.sleep ? d.sleep + 'h' : '—'}</td><td>${(d.habits || []).length}/${c.habits.length}</td></tr>`; }).join('')}
@@ -1489,8 +1489,8 @@ function viewToday() {
       <div class="divider"></div><div class="row between"><span class="small"><b>Water</b> <span class="sub num">${((d.water || 0) / 1000).toFixed(2)} / ${(wt / 1000).toFixed(1)} L</span></span><div class="row" style="gap:6px"><button class="iconbtn sm" data-act="water" data-v="-250" aria-label="Remove a glass">−</button><button class="btn sm" data-act="water" data-v="250">${IC.drop} 250ml</button></div></div>
       <div class="water" aria-hidden="true">${Array.from({ length: glasses }, (_, i) => `<i class="${i < have ? 'on' : ''}"></i>`).join('')}</div></section>
 
-    <section class="card"><div class="row between"><h3>Habits</h3><span class="small sub num">${d.habits.length}/${c.habits.length}</span></div>
-      <div class="stack-sm">${c.habits.map(h => { const on = d.habits.includes(h.id); return `<button class="check ${on ? 'on' : ''}" data-act="habit" data-h="${h.id}"><span class="box">${on ? IC.tick : ''}</span><span>${esc(h.label)}</span></button>`; }).join('') || '<div class="empty small">No habits set yet.</div>'}</div></section>
+    <section class="card"><div class="row between"><h3>Habits</h3><span class="small sub num">${d.habits.length}/${habitsOn(c, t).length}</span></div>
+      <div class="stack-sm">${habitsOn(c, t).map(h => { const on = d.habits.includes(h.id); return `<button class="check ${on ? 'on' : ''}" data-act="habit" data-h="${h.id}"><span class="box">${on ? IC.tick : ''}</span><span>${esc(h.label)}</span></button>`; }).join('') || '<div class="empty small">No habits set yet.</div>'}</div></section>
 
     <div class="tiles">${stat('scale', `Weight (${c.units})`, d.weight ? kgTo(d.weight, c.units) : 'Log', 'sheetWeight')}${stat('foot', `Steps${c.targets.steps ? ' / ' + (c.targets.steps / 1000) + 'k' : ''}`, d.steps ? d.steps.toLocaleString('en-GB') : 'Log', 'sheetDaily')}${stat('moon', 'Sleep (hours)', d.sleep ?? 'Log', 'sheetDaily')}</div>
     ${pin ? `<button class="card tap" data-go="community"><div class="row" style="gap:8px"><span class="pill or">Pinned</span><b>${esc(S.settings.coachName)}</b></div><p class="small sub">${esc(pin.text)}</p></button>` : ''}`);
@@ -1743,7 +1743,7 @@ const ACTS = {
   addFoodItem: el => { const f = allFoods().find(x => x[0] === el.dataset.n), c = me(); if (!f) return; withRank(c, () => S.food.push({ id: uid(), clientId: c.id, date: FS.date, meal: FS.meal, name: f[0], serving: f[1], qty: +FS.qty, kcal: f[2], p: f[3], c: f[4], f: f[5] })); DB.ensureDay(c.id, FS.date); save(); toast(`${f[0]} added to ${FS.meal.toLowerCase()}`); const y = window.scrollY; render(); window.scrollTo(0, y); },
   delFood: el => { S.food = S.food.filter(f => f.id !== el.dataset.id); save(); stay({}); },
   goTrain: () => go('train'),
-  habit: el => { const c = me(), d = DB.ensureDay(c.id, today()), h = el.dataset.h; withRank(c, () => { d.habits = d.habits.includes(h) ? d.habits.filter(x => x !== h) : [...d.habits, h]; }); save(); if (c.habits.every(x => d.habits.includes(x.id))) toast(`All habits ticked. +${POINTS.habitsDay} points`); stay({}); },
+  habit: el => { const c = me(), d = DB.ensureDay(c.id, today()), h = el.dataset.h; withRank(c, () => { d.habits = d.habits.includes(h) ? d.habits.filter(x => x !== h) : [...d.habits, h]; }); save(); if (habitsOn(c, today()).every(x => d.habits.includes(x.id))) toast(`All habits ticked. +${POINTS.habitsDay} points`); stay({}); },
   water: el => { const c = me(), d = DB.ensureDay(c.id, el.dataset.date || today()); d.water = Math.max(0, (d.water || 0) + +el.dataset.v); save(); closeSheet(); if (d.water >= S.settings.waterTarget && +el.dataset.v > 0 && d.water - el.dataset.v < S.settings.waterTarget) toast('Water target hit'); stay({}); },
   seeFb: el => { const k = S.checkins.find(x => x.id === el.dataset.id); k.seen = true; save(); go('checkin', { id: k.id, _back: 'today' }); },
   siteDay: el => { DB.ensureDay(ses.clientId, el.dataset.date).siteDay = el.dataset.v === '1'; save(); stay({}); },
@@ -1959,7 +1959,7 @@ function dayScore(c, date = today()) {
   const d = DB.day(c.id, date) || { habits: [], water: 0 }, tot = dayTotals(c.id, date), tg = targetsFor(c, date), plan = todaysPlan(c, date), logged = S.logs.some(l => l.clientId === c.id && l.date === date);
   const it = [{ l: 'Weigh-in', ic: 'scale', done: !!d.weight, act: 'sheetWeight' }, { l: plan.rest && !logged ? 'Rest day' : 'Session', ic: 'train', done: logged || (plan.rest && !plan.day), go: 'train' },
     { l: 'Food logged', ic: 'fuel', done: tot.n > 0, act: 'sheetFood' }, { l: `Protein ${tg.p}g`, ic: 'bolt', done: tot.p >= tg.p * 0.9, go: 'fuel' }, { l: `Water ${(S.settings.waterTarget / 1000).toFixed(1)}L`, ic: 'drop', done: (d.water || 0) >= S.settings.waterTarget, act: 'water', v: 250 }];
-  if (c.habits.length) it.push({ l: 'Habits', ic: 'tick', done: c.habits.every(h => d.habits.includes(h.id)), go: 'today' });
+  if (habitsOn(c, today()).length) it.push({ l: 'Habits', ic: 'tick', done: habitsOn(c, today()).every(h => d.habits.includes(h.id)), go: 'today' });
   if (c.targets.steps) it.push({ l: `${(c.targets.steps / 1000)}k steps`, ic: 'foot', done: (d.steps || 0) >= c.targets.steps, act: 'sheetDaily' });
   return { it, done: it.filter(x => x.done).length, n: it.length };
 }
@@ -2075,8 +2075,8 @@ function viewToday() {
       <div class="divider"></div><div class="row between"><span class="small"><b>Water</b> <span class="sub num">${((d.water || 0) / 1000).toFixed(2)} / ${(wt / 1000).toFixed(1)} L</span></span><div class="row" style="gap:6px"><button class="iconbtn sm" data-act="water" data-v="-250" aria-label="Remove a glass">−</button><button class="btn sm" data-act="water" data-v="250">${IC.drop} 250ml</button></div></div>
       <div class="water" aria-hidden="true">${Array.from({ length: glasses }, (_, i) => `<i class="${i < have ? 'on' : ''}"></i>`).join('')}</div></section>
 
-    <section class="card"><div class="row between"><h3>Habits</h3><span class="small sub num">${d.habits.length}/${c.habits.length}</span></div>
-      <div class="stack-sm">${c.habits.map(h => { const on = d.habits.includes(h.id); return `<button class="check ${on ? 'on' : ''}" data-act="habit" data-h="${h.id}"><span class="box">${on ? IC.tick : ''}</span><span>${esc(h.label)}</span></button>`; }).join('') || '<div class="empty small">No habits set yet.</div>'}</div></section>
+    <section class="card"><div class="row between"><h3>Habits</h3><span class="small sub num">${d.habits.length}/${habitsOn(c, t).length}</span></div>
+      <div class="stack-sm">${habitsOn(c, t).map(h => { const on = d.habits.includes(h.id); return `<button class="check ${on ? 'on' : ''}" data-act="habit" data-h="${h.id}"><span class="box">${on ? IC.tick : ''}</span><span>${esc(h.label)}</span></button>`; }).join('') || '<div class="empty small">No habits set yet.</div>'}</div></section>
     ${pin ? `<button class="card tap" data-go="community"><div class="row" style="gap:8px"><span class="pill or">Pinned</span><b>${esc(S.settings.coachName)}</b></div><p class="small sub">${esc(pin.text)}</p></button>` : ''}`);
 }
 
@@ -2451,7 +2451,7 @@ function statsPanel(c) {
   const w = weightData(c, rg), logs = DB.logsOf(c.id).filter(l => l.date >= from), dl = DB.dailyOf(c.id).filter(d => d.date >= from), cd = DB.cardioOf(c.id).filter(k => k.date >= from);
   const days = Array.from({ length: Math.min(nDays, 400) }, (_, i) => addDays(t, -i)), tots = days.map(d => dayTotals(c.id, d)).filter(x => x.n), tg = c.targets.site, avg = (a, fn) => a.length ? sum(a, fn) / a.length : null;
   const vol = sum(logs, l => sum(l.sets, s => s.kg * s.reps)), dur = logs.filter(l => l.duration), st = dl.filter(d => d.steps), sl = dl.filter(d => d.sleep), wa = dl.filter(d => d.water), sk = streaks(c.id), pts = points(c.id), cp = compliance(c), dash = '–';
-  const hab = c.habits.length && dl.length ? sum(dl, d => d.habits.length) / (dl.length * c.habits.length) * 100 : null;
+  const hab = c.habits.length && dl.length ? Math.min(100, sum(dl, d => d.habits.length) / Math.max(1, sum(dl, d => habitsOn(c, d.date).length)) * 100) : null;
   return `<div class="row between"><span class="small sub">Showing: ${rangeWord()}.</span>${rangeSeg()}</div>
     <section class="card"><div class="row between nowrap"><h3>On-plan score</h3><span class="tiny">last 7 days</span></div>
       <div class="chw"><div class="chh"><div class="chc"><span class="chv num"><b>${cp.all}</b><small>%</small></span><span class="chl">Overall</span></div><div class="chc"><span class="chv num"><b>${cp.done}</b><small> of ${cp.planned}</small></span><span class="chl">Sessions done</span></div></div></div>

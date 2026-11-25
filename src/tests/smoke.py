@@ -3,7 +3,7 @@ APP = 'file://' + os.path.abspath(os.path.join(os.path.dirname(__file__), '../..
 import asyncio, json, sys
 from playwright.async_api import async_playwright
 URL = APP
-COACH=['dash','cmore','clients','clienttable','mealplans','recipes','challenges','habits','exvideos','ws','wstrash','automations','programmes','foodlib','community','settings','library']
+COACH=['dash','packs','cmore','clients','clienttable','mealplans','recipes','challenges','habits','exvideos','ws','wstrash','automations','programmes','foodlib','community','settings','library']
 CLIENT=['today','fuel','nutrition','recipes','myplan','grocery','challenges','docs','menu','tools','timer','train','progress','workouts']
 async def run(width):
     errs=[]

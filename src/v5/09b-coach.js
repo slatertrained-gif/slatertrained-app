@@ -49,7 +49,7 @@ function chScore(ch, c) {
   const days = S.daily.filter(d => d.clientId === c.id && inR(d.date));
   out.steps = days.filter(d => (d.steps || 0) >= 10000).length;
   out.food = new Set(S.food.filter(f => f.clientId === c.id && inR(f.date)).map(f => f.date)).size;
-  out.habits = c.habits.length ? days.filter(d => c.habits.every(h => d.habits.includes(h.id))).length : 0;
+  out.habits = days.filter(d => habitsOn(c, d.date).length && habitsOn(c, d.date).every(h => d.habits.includes(h.id))).length;
   out.water = days.filter(d => (d.water || 0) >= S.settings.waterTarget).length;
   out.checkin = S.checkins.filter(k => k.clientId === c.id && inR(k.date)).length;
   out.total = sum(Object.keys(R), k => (out[k] || 0) * (+R[k] || 0)); return out;
@@ -190,8 +190,8 @@ function viewExVideos() {
     <input class="in" id="exq" data-q="q" placeholder="Search exercises" value="${esc(ses.p.q || '')}">
     <section class="card"><div class="list">${list.map(e => `<div class="li"><span class="grow" style="min-width:0"><b class="trunc" style="display:block">${esc(e.name)}</b><span class="tiny">${esc(e.muscle)} · ${esc(e.equip)}</span></span><input class="in sm vidin" type="url" data-exvid="${e.id}" value="${esc(e.video || '')}" placeholder="https://…" aria-label="Demo link for ${esc(e.name)}">${e.video ? `<a class="iconbtn sm or" href="${esc(e.video)}" target="_blank" rel="noopener" aria-label="Open demo">${IC.play}</a>` : ''}</div>`).join('')}</div></section>`, { nav: 'exvideos' });
 }
-if (typeof viewSession === 'function') { const _vs = viewSession; VIEWS.client.session = function () { const h = _vs(); if (!h) return h; try { const d = findDay(me(), ses.p.dayId), vids = d ? d.exercises.map(e => DB.ex(e.exId)).filter(x => x && x.video) : [];
-  if (!vids.length) return h; const card = `<section class="card"><h3>${IC.play} Watch the demos</h3><div class="list">${[...new Map(vids.map(v => [v.id, v])).values()].map(v => `<a class="li tap" href="${esc(v.video)}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none"><span class="grow">${esc(v.name)}</span><span class="pill or">${IC.play} Watch</span></a>`).join('')}</div></section>`;
+if (typeof viewSession === 'function') { const _vs = viewSession; VIEWS.client.session = function () { const h = _vs(); if (!h) return h; try { const d = findDay(me(), ses.p.dayId), vids = d ? d.exercises.map(e => DB.ex(e.exId)).filter(hasDemo) : [];
+  if (!vids.length) return h; const card = `<section class="card"><h3>${IC.play} Watch the demos</h3><div class="list">${[...new Map(vids.map(v => [v.id, v])).values()].map(v => `<button class="li tap fooditem" data-act="exDemo" data-id="${v.id}"><span class="grow">${esc(v.name)}</span><span class="pill or">${IC.play} Watch</span></button>`).join('')}</div></section>`;
   const i = h.lastIndexOf('<div class="footer">'); return i > 0 ? h.slice(0, i) + card + h.slice(i) : h; } catch (e) { return h; } }; }
 
 document.addEventListener('input', e => { const t = e.target, ds = t.dataset; if (!ds) return;
