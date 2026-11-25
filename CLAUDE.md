@@ -10,7 +10,7 @@ The owner is Slater, a non-developer. Explain things in plain British English, n
 - `index.html` — the built app that GitHub Pages serves. **Never edit it by hand. Always rebuild it.**
 - `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png` — install-to-home-screen bits.
 - `src/base-build4.html` — builds 1–4 as one page (pulled from the published artifact on 24 Nov 2026). Treat as the base. Small fixes to old screens can be made in it directly.
-- `src/v5/` — build 5 code, joined after the base: `09a-nutrition.js` (food diary, barcode scanner, Open Food Facts, recipes, meal plans, fasting, nutrition report), `09b-coach.js` (challenges, habit library, auto tags, client table, journey messages, interval timer, demo videos), `09c-workspace.js` (Notion-style pages and databases), `09z-register.js` (navigation and screen wiring), `09-v5.css`.
+- `src/v5/` — build 5 code, joined after the base: `09a-nutrition.js` (food diary, barcode scanner, Open Food Facts, recipes, meal plans, fasting, nutrition report), `09b-coach.js` (challenges, habit library, auto tags, client table, journey messages, interval timer, demo videos), `09c-workspace.js` (Notion-style pages and databases), `09d-todo.js` (client to-do list set by the coach), `09z-register.js` (navigation and screen wiring), `09-v5.css`.
 - `src/build.py` — builds everything. `src/tests/` — Playwright browser tests.
 
 ## How a release works
