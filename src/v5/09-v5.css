@@ -237,5 +237,39 @@ span.todomain { cursor: default; }
 .linkbtn::after { content: ''; position: absolute; inset: -12px -4px; }
 .like { min-height: 36px; min-width: 36px; justify-content: center; }
 @media (max-width: 699px) { .sheet .grab { width: 48px; height: 5px; margin: -6px auto 2px; box-shadow: 0 0 0 14px transparent; } .sheet { touch-action: pan-y; overscroll-behavior: contain; } }
+.mcbar { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 4px; }
+.mcbar::-webkit-scrollbar { display: none; }
+.mcdot { flex: 1 0 34px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.mcdot b { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--line-2); background: var(--card); display: flex; align-items: center; justify-content: center; font-family: Syne, sans-serif; font-size: 11px; color: var(--muted); }
+.mcdot span { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.mcdot.on b { border-color: var(--orange); color: var(--orange); background: var(--ember); }
+.mcdot.on span { color: var(--orange); }
+.mcdot.done b { background: var(--orange); border-color: var(--orange); color: var(--on-orange); }
+.mcdot.done span { color: var(--text); }
+.mccard { gap: 16px; }
+.mchd h2 { font-family: Syne, sans-serif; font-weight: 800; text-transform: uppercase; font-size: 24px; margin: 0 0 6px; }
+.mchd p { color: var(--muted); font-size: 14px; margin: 0; }
+.mcopts { display: grid; gap: 8px; }
+.mcopts.two { grid-template-columns: 1fr 1fr; }
+.mcopt { position: relative; text-align: left; background: var(--card-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; color: var(--text); display: flex; flex-direction: column; gap: 3px; cursor: pointer; min-height: 64px; }
+.mcopt b { font-size: 15px; font-weight: 600; padding-right: 20px; line-height: 1.2; }
+.mcopt span { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.mcopt.sel { border-color: var(--orange); background: var(--ember); box-shadow: 0 0 0 1px var(--orange); }
+.mcopt.sel b { font-weight: 700; }
+.mcopt.sel span { color: var(--orange-hi); }
+.mcopt.sel::after { content: '✓'; position: absolute; top: 12px; right: 14px; font-size: 12px; color: var(--orange); font-weight: 800; }
+.tiles.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tiles.three .tile { padding: 12px 10px; }
+.mcerr { color: var(--orange-hi); font-size: 13px; }
+.mcnav .btn.grow { font-family: Syne, sans-serif; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.seg.mini button { padding: 5px 12px; font-size: 12px; min-height: 30px; }
+.mccal { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(48px, 13vw, 64px); color: var(--orange); line-height: 1; }
+.mcprio { border-left: 4px solid var(--orange); }
+.mcprio p { margin: 0; line-height: 1.7; font-size: 14px; }
+.mctotal { border-top: 1px solid var(--orange); }
+.mcadj { display: flex; flex-direction: column; gap: 3px; padding: 10px 0; border-top: 1px solid var(--line); }
+.mcadj:first-of-type { border-top: 0; }
+.mcadj b { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
+@media (max-width: 380px) { .mcopts.two { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .scanbox.live .scanframe i { animation: none; } .tgl { transition: none; } }
 </style>
