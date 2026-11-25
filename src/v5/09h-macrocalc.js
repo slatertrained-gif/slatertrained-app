@@ -87,7 +87,7 @@ function mcResults(c, coach) {
   return shell('Your targets', coach ? 'Coach HQ' : 'Tools', `
     <section class="card hero mcres"><div class="eyebrow">Your personalised targets</div><span class="small sub">${esc(D.name || (c ? first(c.name) : ''))} — ${wShow}, ${D.age} yrs old</span>
       <div class="row nowrap" style="align-items:baseline;gap:8px"><b class="mccal num">${r.calories.toLocaleString()}</b><span class="sub">kcal / day</span></div>
-      <div class="tiles three">${[['Protein', r.p], ['Carbs', r.c], ['Fat', r.f]].map(([l, v]) => `<div class="tile"><span class="big num">${v}</span><span class="lbl">grams · ${l}</span></div>`).join('')}</div></section>
+      <div class="tiles three">${[['Protein', r.p], ['Carbs', r.c], ['Fat', r.f]].map(([l, v]) => `<div class="tile"><span class="big num">${v}</span><span class="lbl">${l} (g)</span></div>`).join('')}</div></section>
     <div class="tiles three">${[['Litres / day', r.water], ['Training days', D.training === '6' ? '6+' : D.training], [MC.wu === 'lbs' ? 'lbs bodyweight' : 'kg bodyweight', MC.wu === 'lbs' ? Math.round(D.weight * 2.205) : Math.round(D.weight)]].map(([l, v]) => `<div class="tile"><span class="big num">${v}</span><span class="lbl">${l}</span></div>`).join('')}</div>
     ${coach && c ? `<section class="card stripe"><h3>Set these as ${esc(first(c.name))}'s targets</h3><div class="stack-sm">
       <button class="check ${MC.mode !== 'split' ? 'on' : ''}" data-act="mcMode" data-v="same"><span class="box">${MC.mode !== 'split' ? IC.tick : ''}</span><span class="grow"><b>Same every day</b><span class="tiny" style="display:block">${r.kcal} kcal · ${r.p}p ${r.c}c ${r.f}f. Matches the website calculator.</span></span></button>

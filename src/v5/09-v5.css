@@ -35,7 +35,6 @@
 .eating b { color: var(--orange-hi); font-size: 16px; }
 .fdtiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .fdtiles .tile { padding: 10px; }
-.fdtiles .big { font-size: 21px; }
 .nutrows { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .nutrows div { background: var(--card-2); border: 1px solid var(--line); border-radius: 11px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
 .fields.q4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -261,7 +260,7 @@ span.todomain { cursor: default; }
 .tiles.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .tiles.three .tile { padding: 12px 10px; }
 .mcerr { color: var(--orange-hi); font-size: 13px; }
-.mcnav .btn.grow { font-family: Syne, sans-serif; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.mcnav .btn.grow { font-size: 16px; }
 .seg.mini button { padding: 5px 12px; font-size: 12px; min-height: 30px; }
 .mccal { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(48px, 13vw, 64px); color: var(--orange); line-height: 1; }
 .mcprio { border-left: 4px solid var(--orange); }
@@ -271,5 +270,14 @@ span.todomain { cursor: default; }
 .mcadj:first-of-type { border-top: 0; }
 .mcadj b { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
 @media (max-width: 380px) { .mcopts.two { grid-template-columns: 1fr; } }
+/* v5.9: text that fits. Big tile numbers shrink with the tile (Syne is wide). */
+.tile { container-type: inline-size; }
+.tile .big { font-size: clamp(16px, 22cqi, 31px); white-space: nowrap; }
+.tile .big[style*="font-size"] { font-size: clamp(13px, 12cqi, 22px) !important; }
+.tile .big small { font-size: clamp(11px, 11cqi, 14px); }
+.tile .lbl { overflow-wrap: anywhere; }
+@media (max-width: 419px) { .fdtiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.li .grow { min-width: 0; }
+.li .tiny, .li .small { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .scanbox.live .scanframe i { animation: none; } .tgl { transition: none; } }
 </style>

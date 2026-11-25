@@ -16,7 +16,7 @@ The owner is Slater, a non-developer. Explain things in plain British English, n
 ## How a release works
 1. Edit files in `src/`.
 2. `python3 src/build.py <version>`. Bump the version each release (e.g. 5.3 → 5.4). It shows under the footer, so Slater can check his phone is up to date.
-3. `node --check dist/app.js`, then `python3 src/tests/smoke.py` (every screen at 400px and 1320px: no errors, no sideways overflow, no "undefined"). Run the other tests when touching their area. `src/tests/buttons.py` presses every button, link and form on every screen and in every pop-up (slow, about 10 minutes): run it before bigger releases. `src/tests/tappable.py` checks buttons aren't covered or too small on a phone.
+3. `node --check dist/app.js`, then `python3 src/tests/smoke.py` (every screen at 400px and 1320px: no errors, no sideways overflow, no "undefined"). Run the other tests when touching their area. `src/tests/buttons.py` presses every button, link and form on every screen and in every pop-up (slow, about 10 minutes): run it before bigger releases. `src/tests/tappable.py` checks buttons aren't covered or too small on a phone. `src/tests/textfit.py` checks text fits inside buttons, tiles and headings at 390px and 360px **with the real fonts** (Syne is much wider than the fallback): run it after any layout or wording change. Tests can't reach Google Fonts, so `src/tests/realfonts.py` serves them from `src/tests/fonts/`; use it in any new screenshot test.
 4. Commit `index.html` and the `src/` changes, then push `main`. Pages updates in about a minute. Slater closes and reopens the app to get it.
 5. Republish `dist/index.html` to the Claude artifact (publish_files with the slug above).
 
