@@ -285,4 +285,6 @@ span.todomain { cursor: default; }
 /* v6.1: Archivo for everything. Body text at normal width, everything bold/display condensed. */
 body { font-stretch: 100%; }
 h1, h2, h3, .topbar .ttl, .pgtitle, .titlein, .mchd h2 { font-weight: 900; }
+/* v6.2: condensed headings need a touch more room between words */
+h1, h2, h3, .topbar .ttl, .pgtitle, .titlein, .mchd h2, .b-h1 .bt, .b-h2 .bt, .b-h3 .bt { word-spacing: 0.12em; }
 </style>

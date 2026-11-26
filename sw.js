@@ -1,5 +1,5 @@
 /* The Tradie Transformation: offline cache. Build 6.1 (Archivo fonts). */
-const CACHE = 'tt-v6-1';
+const CACHE = 'tt-v6-2';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 const LIBS = /^https:\/\/(unpkg\.com|cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)\//;
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
